@@ -1,0 +1,4 @@
+metric,de_novo_model,cadth_external_reference,absolute_difference,interpretation
+incremental_cost_cad,9915.204637733783,9385.0,530.2046377337829,Benchmark comparison only. Cost proximity is expected because the model uses the public CADTH annual acquisition-cost anchor.
+incremental_qaly,0.045261366862686,0.046,-0.0007386331373139959,"Benchmark comparison only, not independent external validation, because selected utility and transition inputs are benchmark-aligned scenarios."
+icer_cad_per_qaly,219065.51491947967,204928.0,14137.514919479669,Benchmark comparison only. Agreement with CADTH should not be interpreted as an independent validity test.

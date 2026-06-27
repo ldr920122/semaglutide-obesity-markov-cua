@@ -1,0 +1,5 @@
+scenario,currency,icer_per_qaly,source_note
+CADTH reference case,CAD,204928,CADTH pharmacoeconomic public reference case
+No prediabetes cost savings,CAD,209449,CADTH scenario analysis
+No delay in diabetes onset,CAD,241914,CADTH scenario analysis
+Full Health Canada indication,CAD,223572,CADTH scenario analysis

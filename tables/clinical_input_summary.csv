@@ -1,0 +1,5 @@
+input,value,source,model_use,verification_status
+STEP 1 semaglutide body-weight change,-14.9% at week 68,Wilding2021pmid33567185,base-case treatment effect,source_traced_pubmed_abstract_needs_full_text_page_check
+STEP 1 comparator body-weight change,-2.4% at week 68,Wilding2021pmid33567185,base-case comparator effect,source_traced_pubmed_abstract_needs_full_text_page_check
+STEP 4 continued semaglutide body-weight change,-7.9% from week 20 to 68,Rubino2021pmid33755728,maintenance scenario,source_traced_pubmed_abstract_needs_full_text_page_check
+STEP 4 switch-to-placebo body-weight change,+6.9% from week 20 to 68,Rubino2021pmid33755728,discontinuation/weight-regain scenario,source_traced_pubmed_abstract_needs_full_text_page_check

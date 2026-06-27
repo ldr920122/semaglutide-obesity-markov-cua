@@ -1,0 +1,25 @@
+scenario,scenario_label,cycle_year,retained_effect_factor
+base,Base retained-effect schedule,1,1.0
+base,Base retained-effect schedule,2,0.85
+base,Base retained-effect schedule,3,0.65
+base,Base retained-effect schedule,4,0.25
+base,Base retained-effect schedule,5,0.0
+base,Base retained-effect schedule,6,0.0
+base,Base retained-effect schedule,7,0.0
+base,Base retained-effect schedule,8,0.0
+immediate_loss_after_stop,Immediate loss after stopping,1,1.0
+immediate_loss_after_stop,Immediate loss after stopping,2,0.85
+immediate_loss_after_stop,Immediate loss after stopping,3,0.65
+immediate_loss_after_stop,Immediate loss after stopping,4,0.0
+immediate_loss_after_stop,Immediate loss after stopping,5,0.0
+immediate_loss_after_stop,Immediate loss after stopping,6,0.0
+immediate_loss_after_stop,Immediate loss after stopping,7,0.0
+immediate_loss_after_stop,Immediate loss after stopping,8,0.0
+two_year_residual_after_stop,Two-year residual after stopping,1,1.0
+two_year_residual_after_stop,Two-year residual after stopping,2,0.85
+two_year_residual_after_stop,Two-year residual after stopping,3,0.65
+two_year_residual_after_stop,Two-year residual after stopping,4,0.35
+two_year_residual_after_stop,Two-year residual after stopping,5,0.15
+two_year_residual_after_stop,Two-year residual after stopping,6,0.0
+two_year_residual_after_stop,Two-year residual after stopping,7,0.0
+two_year_residual_after_stop,Two-year residual after stopping,8,0.0

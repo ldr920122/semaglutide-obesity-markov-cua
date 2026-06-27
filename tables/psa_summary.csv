@@ -1,0 +1,14 @@
+metric,value
+draws,5000
+seed,270627
+incremental_cost_mean,9913.335042275563
+incremental_cost_p2_5,7698.002203787688
+incremental_cost_p97_5,12221.4832874204
+incremental_qaly_mean,0.04509666537869302
+incremental_qaly_p2_5,0.021830619724675416
+incremental_qaly_p97_5,0.07515987914304237
+icer_median,225467.0878866514
+icer_p2_5,119330.27925556625
+icer_p97_5,475316.1533375641
+probability_cost_effective_at_50000,0.0
+probability_cost_effective_at_150000,0.1098

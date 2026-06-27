@@ -1,0 +1,11 @@
+outcome_id,outcome,semaglutide,comparator,incremental,unit,source_or_calculation,verification_status
+R001,total_discounted_cost,22837.39715543676,12922.192517702977,9915.204637733783,2022 CAD per patient,De novo cohort Markov model run by analysis/run_markov_psa.py,model_generated_source_traced_or_calibrated_inputs
+R002,total_discounted_qalys,19.01824170916326,18.972980342300573,0.045261366862686,QALYs per patient,De novo cohort Markov model run by analysis/run_markov_psa.py,model_generated_source_traced_or_calibrated_inputs
+R003,total_discounted_life_years,24.75516251074253,24.73850660928608,0.01665590145644913,life-years per patient,De novo cohort Markov model run by analysis/run_markov_psa.py,model_generated_source_traced_or_calibrated_inputs
+R004,icer,,,219065.51491947967,2022 CAD per QALY gained,De novo cohort Markov model run by analysis/run_markov_psa.py,model_generated_source_traced_or_calibrated_inputs
+R005,nmb_at_50000,,,-7652.136294599482,2022 CAD per patient,De novo cohort Markov model run by analysis/run_markov_psa.py,model_generated_source_traced_or_calibrated_inputs
+R006,nmb_at_150000,,,-3125.9996083308824,2022 CAD per patient,De novo cohort Markov model run by analysis/run_markov_psa.py,model_generated_source_traced_or_calibrated_inputs
+R007,probability_cost_effective_at_50000,,,0.0,probability,De novo cohort Markov model run by analysis/run_markov_psa.py,model_generated_source_traced_or_calibrated_inputs
+R008,probability_cost_effective_at_150000,,,0.1098,probability,De novo cohort Markov model run by analysis/run_markov_psa.py,model_generated_source_traced_or_calibrated_inputs
+R009,end_horizon_alive,0.3284706890949549,0.3273650570217298,0.0011056320732251157,cohort proportion,De novo cohort Markov model run by analysis/run_markov_psa.py,model_generated_source_traced_or_calibrated_inputs
+R010,end_horizon_diabetes,0.17838692020341335,0.17958637156061977,-0.0011994513572064214,cohort proportion,De novo cohort Markov model run by analysis/run_markov_psa.py,model_generated_source_traced_or_calibrated_inputs

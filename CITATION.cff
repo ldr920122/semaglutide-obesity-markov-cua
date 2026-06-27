@@ -1,0 +1,11 @@
+cff-version: 1.2.0
+title: "Semaglutide Obesity Markov Cost-Utility Model"
+message: "Please cite the related manuscript if using this code or the generated model outputs."
+type: software
+authors:
+  - family-names: Xie
+    given-names: Yiming
+  - family-names: Liu
+    given-names: Dongrui
+repository-code: "https://github.com/ldr920122/semaglutide-obesity-markov-cua"
+date-released: "2026-06-28"
