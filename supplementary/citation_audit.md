@@ -4,7 +4,7 @@ Date: 2026-06-28
 
 ## Bottom Line
 
-The final manuscript citation structure has been cleaned and rechecked. The manuscript now has 23 unique in-text citation keys and `references.bib` contains exactly the same 23 keys. There are no undefined citations, no duplicate reference keys, and no orphan bibliography entries. The previously uncited parameter-provenance sources in Supplementary Table S1 are now cited in the Methods.
+The final manuscript citation structure has been cleaned and rechecked. The manuscript now has 23 unique in-text citation keys and `references.bib` contains exactly the same 23 keys. There are no undefined citations, no duplicate reference keys, and no orphan bibliography entries. The previously uncited parameter-provenance sources in Supplementary Table S1 are now cited in the Methods. Dense citation clusters were revised so that each major evidence statement is supported by a targeted citation group rather than by a long undifferentiated reference string.
 
 ## Citation Structure Check
 
@@ -15,6 +15,7 @@ The final manuscript citation structure has been cleaned and rechecked. The manu
 | Undefined citations | 0 |
 | Orphan BibTeX entries | 0 |
 | Duplicate BibTeX keys | 0 |
+| Citation groups with 4 or more keys | 0 |
 
 ## PubMed / PMC Authenticity Check
 

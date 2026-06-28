@@ -83,7 +83,18 @@ def save_pub(fig, name, dpi=600):
     plt.close(fig)
 
 
-def add_box(ax, xy, width, height, label, sublabel="", fc="#F8FAFC", ec="#334155"):
+def add_box(
+    ax,
+    xy,
+    width,
+    height,
+    label,
+    sublabel="",
+    fc="#F8FAFC",
+    ec="#334155",
+    label_size=7.5,
+    sublabel_size=6.2,
+):
     box = FancyBboxPatch(
         xy,
         width,
@@ -95,13 +106,13 @@ def add_box(ax, xy, width, height, label, sublabel="", fc="#F8FAFC", ec="#334155
     )
     ax.add_patch(box)
     x, y = xy
-    ax.text(x + width / 2, y + height * 0.58, label, ha="center", va="center", weight="bold", fontsize=7.5)
+    ax.text(x + width / 2, y + height * 0.58, label, ha="center", va="center", weight="bold", fontsize=label_size)
     if sublabel:
-        ax.text(x + width / 2, y + height * 0.32, sublabel, ha="center", va="center", fontsize=6.2, color=COLORS["neutral"])
+        ax.text(x + width / 2, y + height * 0.32, sublabel, ha="center", va="center", fontsize=sublabel_size, color=COLORS["neutral"])
     return box
 
 
-def add_arrow(ax, start, end, label=None, rad=0.0, color="#374151", style="-|>", label_offset=(0, 0.025)):
+def add_arrow(ax, start, end, label=None, rad=0.0, color="#374151", style="-|>", label_offset=(0, 0.025), label_size=5.8):
     arrow = FancyArrowPatch(
         start,
         end,
@@ -115,40 +126,47 @@ def add_arrow(ax, start, end, label=None, rad=0.0, color="#374151", style="-|>",
     if label:
         mx = (start[0] + end[0]) / 2
         my = (start[1] + end[1]) / 2
-        ax.text(mx + label_offset[0], my + label_offset[1], label, ha="center", va="bottom", fontsize=5.8, color=COLORS["neutral"])
+        ax.text(mx + label_offset[0], my + label_offset[1], label, ha="center", va="bottom", fontsize=label_size, color=COLORS["neutral"])
 
 
 def make_markov_structure():
-    fig, ax = plt.subplots(figsize=(7.2, 3.5))
+    fig, ax = plt.subplots(figsize=(7.2, 2.35))
     ax.set_axis_off()
     ax.set_xlim(0, 1)
     ax.set_ylim(0, 1)
 
-    ax.text(0.02, 0.96, "a", weight="bold", fontsize=9, va="top")
-    ax.text(0.06, 0.96, "Implemented Markov model structure", weight="bold", fontsize=9, va="top")
-    ax.text(0.06, 0.90, "Annual cycles; diabetes is the modeled obesity-related complication; death is absorbing.", fontsize=6.5, color=COLORS["neutral"])
+    ax.text(0.02, 0.94, "a", weight="bold", fontsize=9, va="top")
+    ax.text(0.07, 0.94, "Cohort Markov structure", weight="bold", fontsize=9, va="top")
+    ax.text(0.07, 0.83, "Annual cycles; type 2 diabetes is the modeled complication; death is absorbing.", fontsize=6.7, color=COLORS["neutral"])
 
-    add_box(ax, (0.07, 0.56), 0.22, 0.13, "No diabetes", "starting cohort", COLORS["blue_light"], COLORS["blue"])
-    add_box(ax, (0.39, 0.56), 0.22, 0.13, "Type 2 diabetes", "chronic complication", COLORS["gold_light"], COLORS["gold"])
-    add_box(ax, (0.72, 0.56), 0.20, 0.13, "Death", "absorbing state", COLORS["red_light"], COLORS["red"])
+    box_y = 0.40
+    box_h = 0.20
+    add_box(ax, (0.075, box_y), 0.19, box_h, "No diabetes", "starting cohort", COLORS["blue_light"], COLORS["blue"], 7.9, 6.1)
+    add_box(ax, (0.405, box_y), 0.19, box_h, "Type 2 diabetes", "chronic state", COLORS["gold_light"], COLORS["gold"], 7.9, 6.1)
+    add_box(ax, (0.735, box_y), 0.19, box_h, "Death", "absorbing state", COLORS["red_light"], COLORS["red"], 7.9, 6.1)
 
-    add_arrow(ax, (0.29, 0.625), (0.39, 0.625), "incident diabetes")
-    add_arrow(ax, (0.61, 0.625), (0.72, 0.625), "excess mortality")
-    add_arrow(ax, (0.30, 0.745), (0.82, 0.745), "background mortality", rad=-0.22, label_offset=(0, 0.075))
-    add_arrow(ax, (0.13, 0.705), (0.21, 0.705), "remain", rad=-0.90)
-    add_arrow(ax, (0.46, 0.705), (0.54, 0.705), "remain", rad=-0.90)
+    state_mid_y = box_y + box_h / 2
+    label_box = dict(facecolor="white", edgecolor="none", pad=0.6)
+    add_arrow(ax, (0.265, state_mid_y), (0.405, state_mid_y))
+    ax.text(0.335, state_mid_y + 0.047, "T2D onset", ha="center", va="bottom", fontsize=5.8, color=COLORS["neutral"], bbox=label_box)
+    add_arrow(ax, (0.595, state_mid_y), (0.735, state_mid_y))
+    ax.text(0.665, state_mid_y + 0.047, "mortality", ha="center", va="bottom", fontsize=5.8, color=COLORS["neutral"], bbox=label_box)
+    add_arrow(ax, (0.25, 0.635), (0.83, 0.635), rad=-0.10)
+    ax.text(0.54, 0.675, "background mortality", ha="center", va="bottom", fontsize=5.8, color=COLORS["neutral"], bbox=label_box)
 
-    add_box(ax, (0.07, 0.31), 0.38, 0.16, "Semaglutide arm", "drug + monitoring cost\nHRQoL gain; lower diabetes incidence", COLORS["teal_light"], COLORS["teal"])
-    add_box(ax, (0.55, 0.31), 0.37, 0.16, "Comparator arm", "non-GLP-1 management\nbaseline diabetes incidence", "#EEF2F7", "#64748B")
-
-    ax.text(
-        0.07,
-        0.17,
-        "Costs, QALYs, and life-years accrue with half-cycle correction. The implemented public-source model is intentionally parsimonious; additional complications can be added in future versions.",
-        fontsize=6.1,
-        color=COLORS["neutral"],
-        wrap=True,
+    modifier = FancyBboxPatch(
+        (0.08, 0.14),
+        0.84,
+        0.16,
+        boxstyle="round,pad=0.018,rounding_size=0.018",
+        linewidth=0.8,
+        edgecolor="#94A3B8",
+        facecolor="#F8FAFC",
     )
+    ax.add_patch(modifier)
+    ax.text(0.105, 0.240, "Intervention effects enter as model modifiers", fontsize=7.0, weight="bold", color="#111827", va="center")
+    ax.text(0.105, 0.195, "Semaglutide modifies cost, utility, and diabetes incidence through the retained-effect multiplier.", fontsize=6.25, color=COLORS["neutral"], va="center")
+    ax.text(0.105, 0.160, "The intervention is not represented as a separate health state.", fontsize=6.25, color=COLORS["neutral"], va="center")
     save_pub(fig, "markov_structure")
 
 
