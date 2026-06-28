@@ -101,7 +101,7 @@ def add_box(ax, xy, width, height, label, sublabel="", fc="#F8FAFC", ec="#334155
     return box
 
 
-def add_arrow(ax, start, end, label=None, rad=0.0, color="#374151", style="-|>"):
+def add_arrow(ax, start, end, label=None, rad=0.0, color="#374151", style="-|>", label_offset=(0, 0.025)):
     arrow = FancyArrowPatch(
         start,
         end,
@@ -115,11 +115,11 @@ def add_arrow(ax, start, end, label=None, rad=0.0, color="#374151", style="-|>")
     if label:
         mx = (start[0] + end[0]) / 2
         my = (start[1] + end[1]) / 2
-        ax.text(mx, my + 0.025, label, ha="center", va="bottom", fontsize=5.8, color=COLORS["neutral"])
+        ax.text(mx + label_offset[0], my + label_offset[1], label, ha="center", va="bottom", fontsize=5.8, color=COLORS["neutral"])
 
 
 def make_markov_structure():
-    fig, ax = plt.subplots(figsize=(7.2, 4.2))
+    fig, ax = plt.subplots(figsize=(7.2, 3.5))
     ax.set_axis_off()
     ax.set_xlim(0, 1)
     ax.set_ylim(0, 1)
@@ -128,22 +128,22 @@ def make_markov_structure():
     ax.text(0.06, 0.96, "Implemented Markov model structure", weight="bold", fontsize=9, va="top")
     ax.text(0.06, 0.90, "Annual cycles; diabetes is the modeled obesity-related complication; death is absorbing.", fontsize=6.5, color=COLORS["neutral"])
 
-    add_box(ax, (0.07, 0.57), 0.22, 0.13, "No diabetes", "starting cohort", COLORS["blue_light"], COLORS["blue"])
-    add_box(ax, (0.39, 0.57), 0.22, 0.13, "Type 2 diabetes", "chronic complication", COLORS["gold_light"], COLORS["gold"])
-    add_box(ax, (0.72, 0.57), 0.20, 0.13, "Death", "absorbing state", COLORS["red_light"], COLORS["red"])
+    add_box(ax, (0.07, 0.56), 0.22, 0.13, "No diabetes", "starting cohort", COLORS["blue_light"], COLORS["blue"])
+    add_box(ax, (0.39, 0.56), 0.22, 0.13, "Type 2 diabetes", "chronic complication", COLORS["gold_light"], COLORS["gold"])
+    add_box(ax, (0.72, 0.56), 0.20, 0.13, "Death", "absorbing state", COLORS["red_light"], COLORS["red"])
 
-    add_arrow(ax, (0.29, 0.635), (0.39, 0.635), "incident diabetes")
-    add_arrow(ax, (0.61, 0.635), (0.72, 0.635), "excess mortality")
-    add_arrow(ax, (0.18, 0.70), (0.82, 0.70), "background mortality", rad=-0.18)
-    add_arrow(ax, (0.18, 0.57), (0.18, 0.49), "remain", rad=0.55)
-    add_arrow(ax, (0.50, 0.57), (0.50, 0.49), "remain", rad=0.55)
+    add_arrow(ax, (0.29, 0.625), (0.39, 0.625), "incident diabetes")
+    add_arrow(ax, (0.61, 0.625), (0.72, 0.625), "excess mortality")
+    add_arrow(ax, (0.30, 0.745), (0.82, 0.745), "background mortality", rad=-0.22, label_offset=(0, 0.075))
+    add_arrow(ax, (0.13, 0.705), (0.21, 0.705), "remain", rad=-0.90)
+    add_arrow(ax, (0.46, 0.705), (0.54, 0.705), "remain", rad=-0.90)
 
-    add_box(ax, (0.07, 0.22), 0.38, 0.17, "Semaglutide arm", "drug + monitoring cost\nHRQoL gain; lower diabetes incidence", COLORS["teal_light"], COLORS["teal"])
-    add_box(ax, (0.55, 0.22), 0.37, 0.17, "Comparator arm", "non-GLP-1 management\nbaseline diabetes incidence", "#EEF2F7", "#64748B")
+    add_box(ax, (0.07, 0.31), 0.38, 0.16, "Semaglutide arm", "drug + monitoring cost\nHRQoL gain; lower diabetes incidence", COLORS["teal_light"], COLORS["teal"])
+    add_box(ax, (0.55, 0.31), 0.37, 0.16, "Comparator arm", "non-GLP-1 management\nbaseline diabetes incidence", "#EEF2F7", "#64748B")
 
     ax.text(
         0.07,
-        0.10,
+        0.17,
         "Costs, QALYs, and life-years accrue with half-cycle correction. The implemented public-source model is intentionally parsimonious; additional complications can be added in future versions.",
         fontsize=6.1,
         color=COLORS["neutral"],
