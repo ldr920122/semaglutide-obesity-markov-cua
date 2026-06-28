@@ -130,43 +130,56 @@ def add_arrow(ax, start, end, label=None, rad=0.0, color="#374151", style="-|>",
 
 
 def make_markov_structure():
-    fig, ax = plt.subplots(figsize=(7.2, 2.35))
+    fig, ax = plt.subplots(figsize=(7.2, 2.85))
     ax.set_axis_off()
     ax.set_xlim(0, 1)
     ax.set_ylim(0, 1)
 
     ax.text(0.02, 0.94, "a", weight="bold", fontsize=9, va="top")
     ax.text(0.07, 0.94, "Cohort Markov structure", weight="bold", fontsize=9, va="top")
-    ax.text(0.07, 0.83, "Annual cycles; type 2 diabetes is the modeled complication; death is absorbing.", fontsize=6.7, color=COLORS["neutral"])
+    ax.text(0.07, 0.86, "Annual cycles; type 2 diabetes is the modeled complication; death is absorbing.", fontsize=6.7, color=COLORS["neutral"])
 
-    box_y = 0.40
-    box_h = 0.20
+    box_y = 0.47
+    box_h = 0.18
     add_box(ax, (0.075, box_y), 0.19, box_h, "No diabetes", "starting cohort", COLORS["blue_light"], COLORS["blue"], 7.9, 6.1)
     add_box(ax, (0.405, box_y), 0.19, box_h, "Type 2 diabetes", "chronic state", COLORS["gold_light"], COLORS["gold"], 7.9, 6.1)
     add_box(ax, (0.735, box_y), 0.19, box_h, "Death", "absorbing state", COLORS["red_light"], COLORS["red"], 7.9, 6.1)
 
     state_mid_y = box_y + box_h / 2
-    label_box = dict(facecolor="white", edgecolor="none", pad=0.6)
     add_arrow(ax, (0.265, state_mid_y), (0.405, state_mid_y))
-    ax.text(0.335, state_mid_y + 0.047, "T2D onset", ha="center", va="bottom", fontsize=5.8, color=COLORS["neutral"], bbox=label_box)
+    ax.text(0.335, state_mid_y + 0.047, "T2D onset", ha="center", va="bottom", fontsize=5.8, color=COLORS["neutral"])
     add_arrow(ax, (0.595, state_mid_y), (0.735, state_mid_y))
-    ax.text(0.665, state_mid_y + 0.047, "mortality", ha="center", va="bottom", fontsize=5.8, color=COLORS["neutral"], bbox=label_box)
-    add_arrow(ax, (0.25, 0.635), (0.83, 0.635), rad=-0.10)
-    ax.text(0.54, 0.675, "background mortality", ha="center", va="bottom", fontsize=5.8, color=COLORS["neutral"], bbox=label_box)
+    ax.text(0.665, state_mid_y + 0.047, "mortality", ha="center", va="bottom", fontsize=5.8, color=COLORS["neutral"])
+    add_arrow(ax, (0.25, 0.69), (0.83, 0.69), rad=-0.08)
+    ax.text(0.54, 0.785, "background mortality", ha="center", va="bottom", fontsize=5.8, color=COLORS["neutral"])
 
-    modifier = FancyBboxPatch(
-        (0.08, 0.14),
-        0.84,
-        0.16,
-        boxstyle="round,pad=0.018,rounding_size=0.018",
-        linewidth=0.8,
-        edgecolor="#94A3B8",
-        facecolor="#F8FAFC",
+    sem_box = FancyBboxPatch(
+        (0.10, 0.16),
+        0.36,
+        0.20,
+        boxstyle="round,pad=0.018,rounding_size=0.020",
+        linewidth=0.9,
+        edgecolor=COLORS["teal"],
+        facecolor=COLORS["teal_light"],
     )
-    ax.add_patch(modifier)
-    ax.text(0.105, 0.240, "Intervention effects enter as model modifiers", fontsize=7.0, weight="bold", color="#111827", va="center")
-    ax.text(0.105, 0.195, "Semaglutide modifies cost, utility, and diabetes incidence through the retained-effect multiplier.", fontsize=6.25, color=COLORS["neutral"], va="center")
-    ax.text(0.105, 0.160, "The intervention is not represented as a separate health state.", fontsize=6.25, color=COLORS["neutral"], va="center")
+    comp_box = FancyBboxPatch(
+        (0.54, 0.16),
+        0.36,
+        0.20,
+        boxstyle="round,pad=0.018,rounding_size=0.020",
+        linewidth=0.9,
+        edgecolor="#64748B",
+        facecolor="#EEF2F7",
+    )
+    ax.add_patch(sem_box)
+    ax.add_patch(comp_box)
+    ax.text(0.28, 0.295, "Semaglutide modifiers", ha="center", va="center", fontsize=6.9, weight="bold")
+    ax.text(0.28, 0.245, "drug and monitoring cost", ha="center", va="center", fontsize=5.8, color=COLORS["neutral"])
+    ax.text(0.28, 0.205, "utility gain; lower T2D incidence", ha="center", va="center", fontsize=5.8, color=COLORS["neutral"])
+    ax.text(0.72, 0.295, "Comparator modifiers", ha="center", va="center", fontsize=6.9, weight="bold")
+    ax.text(0.72, 0.245, "usual non-GLP-1 care", ha="center", va="center", fontsize=5.8, color=COLORS["neutral"])
+    ax.text(0.72, 0.205, "baseline T2D incidence", ha="center", va="center", fontsize=5.8, color=COLORS["neutral"])
+    ax.text(0.10, 0.095, "Treatment arms modify costs, utility, and transition probabilities; they are not additional health states.", fontsize=5.8, color=COLORS["neutral"])
     save_pub(fig, "markov_structure")
 
 
