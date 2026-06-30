@@ -210,7 +210,7 @@ def make_icer_scenarios():
     ax.set_xlim(0, 270000)
     ax.set_xlabel("ICER (CAD per QALY gained)", fontsize=7)
     ax.set_title("Public reference-case and scenario ICERs", loc="left", fontsize=9, weight="bold", pad=18)
-    ax.text(0.0, 1.14, "e", transform=ax.transAxes, weight="bold", fontsize=9, va="bottom")
+    ax.text(0.0, 1.14, "f", transform=ax.transAxes, weight="bold", fontsize=9, va="bottom")
     ax.text(0, 1.01, "All listed CADTH scenarios exceed common willingness-to-pay thresholds.", transform=ax.transAxes, fontsize=6.5, color=COLORS["neutral"])
     ax.tick_params(axis="x", labelsize=6.5)
     ax.spines["left"].set_visible(False)
@@ -369,7 +369,7 @@ def make_value_frontier_and_drivers():
     xx, yy = np.meshgrid(x_vals, [value * 100 for value in y_vals])
     ax0.contour(xx, yy, nmb_150, levels=[0], colors=[COLORS["threshold_high"]], linewidths=1.15)
     ax0.contour(xx, yy, nmb_50, levels=[0], colors=[COLORS["threshold_low"]], linewidths=1.15, linestyles="--")
-    ax0.set_title("A  Benefit-price frontier", loc="left", fontsize=8.5, weight="bold", pad=10)
+    ax0.set_title("a  Benefit-price frontier", loc="left", fontsize=8.5, weight="bold", pad=10)
     ax0.text(
         0.0,
         1.01,
@@ -411,7 +411,7 @@ def make_value_frontier_and_drivers():
     ax1.set_yticklabels(labels, fontsize=6.1)
     ax1.set_xlim(-0.82, 0.82)
     ax1.set_xlabel("Spearman correlation with NMB at CAD$150k/QALY", fontsize=7)
-    ax1.set_title("B  Probabilistic drivers", loc="left", fontsize=8.5, weight="bold", pad=10)
+    ax1.set_title("b  Probabilistic drivers", loc="left", fontsize=8.5, weight="bold", pad=10)
     ax1.text(
         0.0,
         1.01,
