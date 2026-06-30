@@ -15,9 +15,9 @@ ORCID IDs are not provided in this repository.
 
 ## Contents
 
-- `analysis/run_markov_psa.py`: executable cohort Markov model, deterministic sensitivity analysis, PSA, price-threshold analysis, and retained-effect structural sensitivity.
+- `analysis/run_markov_psa.py`: executable cohort Markov model, deterministic sensitivity analysis, PSA, price-threshold analysis, retained-effect structural sensitivity, unmodeled-benefit frontier analysis, PSA driver correlations, and EVPI.
 - `scripts/make_pharmacoeconomic_figures.py`: reproducible figure-generation workflow.
-- `tables/`: model parameters, base-case results, PSA outputs, CEAC data, tornado sensitivity results, price-threshold outputs, retained-effect sensitivity, and CADTH benchmark comparison.
+- `tables/`: model parameters, base-case results, PSA outputs, CEAC data, tornado sensitivity results, price-threshold outputs, retained-effect sensitivity, unmodeled-benefit frontier outputs, PSA driver correlations, EVPI, and CADTH benchmark comparison.
 - `figures/`: source CSV files for manuscript figures.
 - `supplementary/`: parameter-source map, CHEERS checklist, citation audit, data-quality review, model run report, and reference library.
 
@@ -40,6 +40,9 @@ The model uses a fixed random seed (`270627`) and 5,000 probabilistic sensitivit
 - Two-year residual effect ICER: CAD 201,366/QALY
 - Required annual drug-price reduction at CAD 50,000/QALY: 76.6%
 - Required annual drug-price reduction at CAD 150,000/QALY: 31.3%
+- Additional non-diabetes QALY gain required at current price to reach CAD 50,000/QALY: 338.1% of the modeled gain
+- Additional non-diabetes QALY gain required at current price to reach CAD 150,000/QALY: 46.0% of the modeled gain
+- Per-patient EVPI at CAD 150,000/QALY: CAD 160
 
 ## Data Scope
 

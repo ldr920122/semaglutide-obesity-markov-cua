@@ -3,6 +3,7 @@ import csv
 
 import matplotlib as mpl
 import matplotlib.pyplot as plt
+import matplotlib.colors as mcolors
 from matplotlib.patches import FancyArrowPatch, FancyBboxPatch
 import numpy as np
 
@@ -79,7 +80,7 @@ def save_pub(fig, name, dpi=600):
     FIG_DIR.mkdir(parents=True, exist_ok=True)
     for ext in ("svg", "pdf"):
         fig.savefig(FIG_DIR / f"{name}.{ext}", bbox_inches="tight")
-    fig.savefig(FIG_DIR / f"{name}.tiff", dpi=dpi, bbox_inches="tight")
+    fig.savefig(FIG_DIR / f"{name}.tiff", dpi=dpi, bbox_inches="tight", pil_kwargs={"compression": "tiff_lzw"})
     plt.close(fig)
 
 
@@ -301,6 +302,130 @@ def make_price_threshold_curve():
     save_pub(fig, "price_threshold_curve")
 
 
+def make_value_frontier_and_drivers():
+    frontier_rows = read_rows(TABLE_DIR / "benefit_price_frontier_grid.csv")
+    driver_rows = read_rows(TABLE_DIR / "psa_driver_correlations.csv")
+    write_rows(
+        FIG_DIR / "value_frontier_source.csv",
+        frontier_rows,
+        [
+            "price_reduction_pct",
+            "additional_non_diabetes_qaly_multiplier",
+            "total_incremental_qaly",
+            "modeled_incremental_qaly",
+            "incremental_cost",
+            "nmb_50000",
+            "nmb_150000",
+            "cost_effective_at_50000",
+            "cost_effective_at_150000",
+        ],
+    )
+    write_rows(
+        FIG_DIR / "psa_driver_correlations_source.csv",
+        driver_rows,
+        [
+            "parameter",
+            "label",
+            "spearman_nmb_50000",
+            "spearman_nmb_150000",
+            "spearman_icer",
+            "mean_value",
+            "p2_5",
+            "p97_5",
+        ],
+    )
+
+    x_vals = sorted({float(row["price_reduction_pct"]) for row in frontier_rows})
+    y_vals = sorted({float(row["additional_non_diabetes_qaly_multiplier"]) for row in frontier_rows})
+    x_index = {value: index for index, value in enumerate(x_vals)}
+    y_index = {value: index for index, value in enumerate(y_vals)}
+    nmb_150 = np.empty((len(y_vals), len(x_vals)), dtype=float)
+    nmb_50 = np.empty((len(y_vals), len(x_vals)), dtype=float)
+    for row in frontier_rows:
+        xi = x_index[float(row["price_reduction_pct"])]
+        yi = y_index[float(row["additional_non_diabetes_qaly_multiplier"])]
+        nmb_150[yi, xi] = float(row["nmb_150000"]) / 1000
+        nmb_50[yi, xi] = float(row["nmb_50000"]) / 1000
+
+    fig, (ax0, ax1) = plt.subplots(
+        2,
+        1,
+        figsize=(7.2, 5.7),
+        gridspec_kw={"height_ratios": [1.35, 1.0], "hspace": 0.58},
+    )
+    cmap = mcolors.LinearSegmentedColormap.from_list(
+        "frontier",
+        ["#B64342", "#F7F7F7", COLORS["teal"]],
+    )
+    norm = mcolors.TwoSlopeNorm(vmin=-9.5, vcenter=0.0, vmax=8.0)
+    im = ax0.imshow(
+        nmb_150,
+        origin="lower",
+        aspect="auto",
+        extent=[min(x_vals), max(x_vals), min(y_vals) * 100, max(y_vals) * 100],
+        cmap=cmap,
+        norm=norm,
+    )
+    xx, yy = np.meshgrid(x_vals, [value * 100 for value in y_vals])
+    ax0.contour(xx, yy, nmb_150, levels=[0], colors=[COLORS["threshold_high"]], linewidths=1.15)
+    ax0.contour(xx, yy, nmb_50, levels=[0], colors=[COLORS["threshold_low"]], linewidths=1.15, linestyles="--")
+    ax0.set_title("A  Benefit-price frontier", loc="left", fontsize=8.5, weight="bold", pad=10)
+    ax0.text(
+        0.0,
+        1.01,
+        "Color shows NMB at CAD$150k/QALY; contours mark break-even at CAD$150k and CAD$50k.",
+        transform=ax0.transAxes,
+        fontsize=5.9,
+        color=COLORS["neutral"],
+    )
+    ax0.set_xlabel("Annual drug-price reduction (%)", fontsize=7)
+    ax0.set_ylabel("Additional non-diabetes QALY gain (% of modeled gain)", fontsize=7)
+    ax0.set_xlim(min(x_vals), max(x_vals))
+    ax0.set_ylim(min(y_vals) * 100, max(y_vals) * 100)
+    ax0.tick_params(labelsize=6.3)
+    cbar = fig.colorbar(im, ax=ax0, fraction=0.030, pad=0.018)
+    cbar.ax.tick_params(labelsize=5.8)
+    cbar.set_label("NMB at CAD$150k/QALY (thousand CAD)", fontsize=6.2)
+    ax0.plot([], [], color=COLORS["threshold_high"], linewidth=1.2, label="CAD$150k break-even")
+    ax0.plot([], [], color=COLORS["threshold_low"], linewidth=1.2, linestyle="--", label="CAD$50k break-even")
+    ax0.legend(loc="lower left", fontsize=5.7, frameon=False)
+
+    top_drivers = driver_rows[:7][::-1]
+    labels = [row["label"] for row in top_drivers]
+    values = np.array([float(row["spearman_nmb_150000"]) for row in top_drivers])
+    colors = [COLORS["teal"] if value > 0 else COLORS["red"] for value in values]
+    y = np.arange(len(labels))
+    ax1.axvline(0, color="#9CA3AF", linewidth=0.8)
+    ax1.barh(y, values, color=colors, alpha=0.85, height=0.54)
+    for yi, value in zip(y, values):
+        ax1.text(
+            value + (0.025 if value >= 0 else -0.025),
+            yi,
+            f"{value:+.2f}",
+            va="center",
+            ha="left" if value >= 0 else "right",
+            fontsize=5.8,
+            color=COLORS["neutral"],
+        )
+    ax1.set_yticks(y)
+    ax1.set_yticklabels(labels, fontsize=6.1)
+    ax1.set_xlim(-0.82, 0.82)
+    ax1.set_xlabel("Spearman correlation with NMB at CAD$150k/QALY", fontsize=7)
+    ax1.set_title("B  Probabilistic drivers", loc="left", fontsize=8.5, weight="bold", pad=10)
+    ax1.text(
+        0.0,
+        1.01,
+        "PSA ranks show which inputs move net benefit most.",
+        transform=ax1.transAxes,
+        fontsize=5.9,
+        color=COLORS["neutral"],
+    )
+    ax1.tick_params(axis="x", labelsize=6.3)
+    ax1.tick_params(axis="y", length=0)
+    ax1.spines["left"].set_visible(False)
+    save_pub(fig, "value_frontier_and_drivers")
+
+
 def make_cost_effectiveness_plane():
     rows = read_rows(TABLE_DIR / "psa_draws.csv")
     base = base_incremental_results()
@@ -423,5 +548,6 @@ if __name__ == "__main__":
     make_ceac()
     make_tornado_icer()
     make_price_threshold_curve()
+    make_value_frontier_and_drivers()
     make_icer_scenarios()
     make_price_stress()

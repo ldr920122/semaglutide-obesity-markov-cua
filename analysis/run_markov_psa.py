@@ -436,6 +436,28 @@ def percentile(values: Iterable[float], q: float) -> float:
     return float(np.percentile(np.asarray(list(values), dtype=float), q))
 
 
+def rankdata(values: Iterable[float]) -> np.ndarray:
+    arr = np.asarray(list(values), dtype=float)
+    order = np.argsort(arr, kind="mergesort")
+    ranks = np.empty(len(arr), dtype=float)
+    i = 0
+    while i < len(arr):
+        j = i + 1
+        while j < len(arr) and arr[order[j]] == arr[order[i]]:
+            j += 1
+        ranks[order[i:j]] = (i + j + 1) / 2.0
+        i = j
+    return ranks
+
+
+def spearman(values: Iterable[float], target: Iterable[float]) -> float:
+    x = rankdata(values)
+    y = rankdata(target)
+    if float(np.std(x)) == 0.0 or float(np.std(y)) == 0.0:
+        return math.nan
+    return float(np.corrcoef(x, y)[0, 1])
+
+
 def write_parameters() -> None:
     path = TABLE_DIR / "markov_model_parameters.csv"
     fieldnames = [
@@ -562,6 +584,45 @@ def write_psa_outputs(psa: List[Dict[str, float]]) -> None:
         writer.writerow(["metric", "value"])
         for key, value in summary.items():
             writer.writerow([key, value])
+
+
+def write_psa_driver_analysis(psa: List[Dict[str, float]]) -> List[Dict[str, float]]:
+    target_50 = [row["nmb_50000"] for row in psa]
+    target_150 = [row["nmb_150000"] for row in psa]
+    target_icer = [row["icer"] for row in psa if math.isfinite(row["icer"])]
+    parameter_labels = {
+        "annual_drug_cost_cad": "Annual drug cost",
+        "treatment_exposure_factor": "Treatment exposure",
+        "utility_gain_per_pct_weight_loss": "Utility gain per weight loss",
+        "annual_diabetes_incidence": "Annual diabetes incidence",
+        "diabetes_rr_semaglutide": "Diabetes RR",
+        "annual_diabetes_cost_cad": "Annual diabetes cost",
+        "diabetes_utility_decrement": "Diabetes disutility",
+    }
+    rows: List[Dict[str, float]] = []
+    for parameter, label in parameter_labels.items():
+        values = [row[parameter] for row in psa]
+        finite_pairs = [(row[parameter], row["icer"]) for row in psa if math.isfinite(row["icer"])]
+        icer_values = [item[1] for item in finite_pairs]
+        parameter_values_for_icer = [item[0] for item in finite_pairs]
+        rows.append(
+            {
+                "parameter": parameter,
+                "label": label,
+                "spearman_nmb_50000": spearman(values, target_50),
+                "spearman_nmb_150000": spearman(values, target_150),
+                "spearman_icer": spearman(parameter_values_for_icer, icer_values) if target_icer else math.nan,
+                "mean_value": float(np.mean(values)),
+                "p2_5": percentile(values, 2.5),
+                "p97_5": percentile(values, 97.5),
+            }
+        )
+    rows.sort(key=lambda row: abs(row["spearman_nmb_150000"]), reverse=True)
+    with (TABLE_DIR / "psa_driver_correlations.csv").open("w", newline="", encoding="utf-8") as f:
+        writer = csv.DictWriter(f, fieldnames=list(rows[0].keys()))
+        writer.writeheader()
+        writer.writerows(rows)
+    return rows
 
 
 def one_way_sensitivity(base_params: Dict[str, float]) -> List[Dict[str, float]]:
@@ -720,6 +781,82 @@ def write_price_threshold_summary(base_params: Dict[str, float]) -> List[Dict[st
     return summary_rows
 
 
+def write_benefit_price_frontier(base_params: Dict[str, float], base: Dict[str, float]) -> List[Dict[str, float]]:
+    grid_rows: List[Dict[str, float]] = []
+    original_cost = base_params["annual_drug_cost_cad"]
+    benefit_multipliers = [round(value, 2) for value in np.arange(0.0, 4.0001, 0.10)]
+    for reduction_pct in range(0, 91, 5):
+        params = dict(base_params)
+        params["annual_drug_cost_cad"] = original_cost * (1.0 - reduction_pct / 100.0)
+        result = run_model(params)
+        for multiplier in benefit_multipliers:
+            incremental_qaly_with_extra_benefit = result["incremental_qaly"] * (1.0 + multiplier)
+            nmb_50 = 50000.0 * incremental_qaly_with_extra_benefit - result["incremental_cost"]
+            nmb_150 = 150000.0 * incremental_qaly_with_extra_benefit - result["incremental_cost"]
+            grid_rows.append(
+                {
+                    "price_reduction_pct": reduction_pct,
+                    "additional_non_diabetes_qaly_multiplier": multiplier,
+                    "total_incremental_qaly": incremental_qaly_with_extra_benefit,
+                    "modeled_incremental_qaly": result["incremental_qaly"],
+                    "incremental_cost": result["incremental_cost"],
+                    "nmb_50000": nmb_50,
+                    "nmb_150000": nmb_150,
+                    "cost_effective_at_50000": int(nmb_50 >= 0.0),
+                    "cost_effective_at_150000": int(nmb_150 >= 0.0),
+                }
+            )
+    with (TABLE_DIR / "benefit_price_frontier_grid.csv").open("w", newline="", encoding="utf-8") as f:
+        writer = csv.DictWriter(f, fieldnames=list(grid_rows[0].keys()))
+        writer.writeheader()
+        writer.writerows(grid_rows)
+
+    summary_rows: List[Dict[str, float]] = []
+    for threshold in (50000.0, 150000.0):
+        required_total_qaly = base["incremental_cost"] / threshold
+        additional_qaly_needed = max(0.0, required_total_qaly - base["incremental_qaly"])
+        additional_multiplier = additional_qaly_needed / base["incremental_qaly"] if base["incremental_qaly"] > 0.0 else math.inf
+        summary_rows.append(
+            {
+                "threshold_cad_per_qaly": threshold,
+                "current_incremental_cost": base["incremental_cost"],
+                "modeled_incremental_qaly": base["incremental_qaly"],
+                "required_total_incremental_qaly_at_current_price": required_total_qaly,
+                "additional_qaly_needed_at_current_price": additional_qaly_needed,
+                "additional_non_diabetes_qaly_multiplier_needed": additional_multiplier,
+                "interpretation": "Threshold analysis only; represents unmodeled non-diabetes benefit required at the current public price anchor.",
+            }
+        )
+    with (TABLE_DIR / "benefit_price_frontier_summary.csv").open("w", newline="", encoding="utf-8") as f:
+        writer = csv.DictWriter(f, fieldnames=list(summary_rows[0].keys()))
+        writer.writeheader()
+        writer.writerows(summary_rows)
+    return summary_rows
+
+
+def write_evpi(psa: List[Dict[str, float]]) -> List[Dict[str, float]]:
+    rows: List[Dict[str, float]] = []
+    for wtp in WTP_VALUES:
+        nmb_values = np.asarray([wtp * row["incremental_qaly"] - row["incremental_cost"] for row in psa])
+        expected_nmb = float(np.mean(nmb_values))
+        current_decision_value = max(0.0, expected_nmb)
+        expected_value_with_perfect_information = float(np.mean(np.maximum(0.0, nmb_values)))
+        evpi = expected_value_with_perfect_information - current_decision_value
+        rows.append(
+            {
+                "wtp_cad_per_qaly": wtp,
+                "expected_incremental_nmb": expected_nmb,
+                "evpi_per_patient": evpi,
+                "probability_cost_effective": float(np.mean(nmb_values > 0.0)),
+            }
+        )
+    with (TABLE_DIR / "evpi.csv").open("w", newline="", encoding="utf-8") as f:
+        writer = csv.DictWriter(f, fieldnames=list(rows[0].keys()))
+        writer.writeheader()
+        writer.writerows(rows)
+    return rows
+
+
 def effect_retention_sensitivity(base_params: Dict[str, float]) -> List[Dict[str, float]]:
     rows: List[Dict[str, float]] = []
     for scenario_key, scenario in EFFECT_RETENTION_SCENARIOS.items():
@@ -794,6 +931,8 @@ def write_model_report(
     dsa: List[Dict[str, float]],
     price_summary: List[Dict[str, float]],
     effect_sensitivity: List[Dict[str, float]],
+    benefit_summary: List[Dict[str, float]],
+    driver_rows: List[Dict[str, float]],
 ) -> None:
     cadth = CADTH_EXTERNAL_REFERENCE
     lines = [
@@ -839,6 +978,20 @@ def write_model_report(
             )
     lines.extend(
         [
+            "",
+            "## Unmodeled-Benefit Threshold Analysis",
+            "",
+        ]
+    )
+    for row in benefit_summary:
+        lines.append(
+            f"- At CAD${row['threshold_cad_per_qaly']:,.0f}/QALY and current price, "
+            f"total incremental QALYs would need to be {row['required_total_incremental_qaly_at_current_price']:.4f}; "
+            f"this implies {row['additional_qaly_needed_at_current_price']:.4f} additional QALYs "
+            f"({row['additional_non_diabetes_qaly_multiplier_needed']:.1%} of the modeled gain)."
+        )
+    lines.extend(
+        [
         "",
         "## Effect-Retention Structural Sensitivity",
         "",
@@ -859,6 +1012,17 @@ def write_model_report(
     for row in dsa[:5]:
         lines.append(
             f"- {row['parameter']}: ICER range CAD${row['icer_low_value']:,.0f} to CAD${row['icer_high_value']:,.0f}/QALY"
+        )
+    lines.extend(
+        [
+            "",
+            "## PSA Driver Correlations",
+            "",
+        ]
+    )
+    for row in driver_rows[:5]:
+        lines.append(
+            f"- {row['label']}: Spearman rho with NMB at CAD$150,000/QALY = {row['spearman_nmb_150000']:.2f}"
         )
     lines.extend(
         [
@@ -901,8 +1065,11 @@ def main() -> None:
     write_parameters()
     write_base_results(base, psa)
     write_psa_outputs(psa)
+    driver_rows = write_psa_driver_analysis(psa)
     write_external_reference(base)
-    write_model_report(base, dsa, price_summary, effect_sensitivity)
+    benefit_summary = write_benefit_price_frontier(base_params, base)
+    write_evpi(psa)
+    write_model_report(base, dsa, price_summary, effect_sensitivity, benefit_summary, driver_rows)
 
     print(json.dumps({"base_case": base, "psa_draws": len(psa)}, indent=2))
 

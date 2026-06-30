@@ -19,7 +19,11 @@ This map links the manuscript's core claims to public sources or model outputs. 
 | PSA intervals and CEAC probabilities | Results, PSA table/figures | `tables/psa_draws.csv`; `tables/psa_summary.csv`; `tables/ceac.csv` | Reproducible model output |
 | DSA drivers | Results, deterministic sensitivity analysis | `tables/dsa_tornado.csv`; `figures/tornado_icer_source.csv` | Reproducible model output |
 | Price-threshold analysis | Results, price-threshold scenario analysis | `tables/price_threshold_scenarios.csv`; `tables/price_threshold_summary.csv`; `figures/price_threshold_curve_source.csv` | Reproducible model output |
+| Unmodeled-benefit break-even frontier | Results, unmodeled-benefit frontier | `tables/benefit_price_frontier_grid.csv`; `tables/benefit_price_frontier_summary.csv`; `figures/value_frontier_source.csv` | Reproducible threshold analysis; not a CV/OSA disease model |
+| PSA driver correlations | Results, PSA driver analysis | `tables/psa_driver_correlations.csv`; `figures/psa_driver_correlations_source.csv` | Reproducible PSA rank-correlation output |
+| EVPI outputs | Results and supplementary model outputs | `tables/evpi.csv` | Reproducible PSA-based decision-uncertainty output |
 | CADTH benchmark comparison | Results, CADTH public benchmark table | `tables/cadth_external_reference_comparison.csv`; CADTH NBK601689 | Model output plus public benchmark source; not independent external validation |
+| Method-precedent comparison | Discussion, method-positioning paragraph | `method_precedent_matrix.csv`; PubMed records for PMID 39882599, 39772331, 42012820, 42021523, 42250076, and 42296505 | PubMed-metadata-supported method comparison; Zotero import still recommended under the new Literature-to-Method Gate |
 
 ## Boundary Statement
 

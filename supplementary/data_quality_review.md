@@ -51,11 +51,11 @@ The package has been upgraded from a working draft to a source-provenance-audite
 | Two-year residual effect ICER | CAD$201,366/QALY |
 | CHEERS 2022 checklist | Present as `supplementary_cheers_2022_checklist.md` |
 | Frontiers upload checklist | Present as `frontiers_public_health_submission_checklist.md` |
-| Repository URL | Must be inserted by authors after OSF/GitHub/Zenodo/Figshare/institutional deposit; no fabricated URL is used |
+| Repository URL | Public GitHub repository created: https://github.com/ldr920122/semaglutide-obesity-markov-cua |
 
 ## Remaining Submission Risks
 
 - The model remains deliberately parsimonious and does not include cardiovascular events, obstructive sleep apnea, adverse events, or full BMI trajectory microsimulation.
 - Some inputs are source-informed or benchmark-aligned rather than directly extracted. This is now disclosed and tested, but it should remain visible in Methods and Limitations.
 - The search should still be described as public-source mapping, not a systematic review.
-- Author names, affiliations, ORCID IDs, author contributions, funding, conflicts of interest, acknowledgments, APC/waiver choice, repository URL, and journal-portal declarations are real author-responsibility fields, not public model parameters.
+- Author names, affiliations, CRediT contributions, funding, conflicts of interest, acknowledgments, and repository URL have been added. Remaining portal-only items are the corresponding-author email, APC/waiver choice, article type/editor selections, and ORCID registration/linking if the live Frontiers workflow requires it.

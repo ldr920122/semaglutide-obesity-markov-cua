@@ -1,6 +1,6 @@
 # Markov Model Run Report
 
-- Run date: 2026-06-28
+- Run date: 2026-06-30
 - Revision scope: Frontiers in Public Health / Health Economics targeted submission update.
 - Random seed: 270627
 - PSA draws: 5,000
@@ -28,6 +28,11 @@
 - Required price reduction at CAD$50,000/QALY: 76.6% (annual drug cost CAD$1,104)
 - Required price reduction at CAD$150,000/QALY: 31.3% (annual drug cost CAD$3,247)
 
+## Unmodeled-Benefit Threshold Analysis
+
+- At CAD$50,000/QALY and current price, total incremental QALYs would need to be 0.1983; this implies 0.1530 additional QALYs (338.1% of the modeled gain).
+- At CAD$150,000/QALY and current price, total incremental QALYs would need to be 0.0661; this implies 0.0208 additional QALYs (46.0% of the modeled gain).
+
 ## Effect-Retention Structural Sensitivity
 
 - Base retained-effect schedule: incremental QALYs 0.0453; ICER CAD$219,066/QALY
@@ -41,6 +46,14 @@
 - treatment_duration_years: ICER range CAD$189,122 to CAD$283,173/QALY
 - annual_diabetes_incidence: ICER range CAD$279,788 to CAD$188,064/QALY
 - treatment_exposure_factor: ICER range CAD$166,981 to CAD$274,214/QALY
+
+## PSA Driver Correlations
+
+- Diabetes RR: Spearman rho with NMB at CAD$150,000/QALY = -0.65
+- Treatment exposure: Spearman rho with NMB at CAD$150,000/QALY = -0.36
+- Utility gain per weight loss: Spearman rho with NMB at CAD$150,000/QALY = 0.33
+- Annual drug cost: Spearman rho with NMB at CAD$150,000/QALY = -0.26
+- Annual diabetes incidence: Spearman rho with NMB at CAD$150,000/QALY = 0.24
 
 ## Interpretation Boundary
 
