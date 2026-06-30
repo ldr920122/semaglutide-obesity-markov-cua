@@ -369,7 +369,7 @@ def make_value_frontier_and_drivers():
     xx, yy = np.meshgrid(x_vals, [value * 100 for value in y_vals])
     ax0.contour(xx, yy, nmb_150, levels=[0], colors=[COLORS["threshold_high"]], linewidths=1.15)
     ax0.contour(xx, yy, nmb_50, levels=[0], colors=[COLORS["threshold_low"]], linewidths=1.15, linestyles="--")
-    ax0.set_title("f  Benefit-price frontier", loc="left", fontsize=8.5, weight="bold", pad=10)
+    ax0.set_title("(A) Benefit-price frontier", loc="left", fontsize=8.5, weight="bold", pad=10)
     ax0.text(
         0.0,
         1.01,
@@ -411,7 +411,7 @@ def make_value_frontier_and_drivers():
     ax1.set_yticklabels(labels, fontsize=6.1)
     ax1.set_xlim(-0.82, 0.82)
     ax1.set_xlabel("Spearman correlation with NMB at CAD$150k/QALY", fontsize=7)
-    ax1.set_title("g  Probabilistic drivers", loc="left", fontsize=8.5, weight="bold", pad=10)
+    ax1.set_title("(B) Probabilistic drivers", loc="left", fontsize=8.5, weight="bold", pad=10)
     ax1.text(
         0.0,
         1.01,
